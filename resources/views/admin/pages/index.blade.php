@@ -28,8 +28,8 @@
             @foreach($pages as $page)
                 <tr>
                     <td>
-                        @if($page->bannerMedia)
-                            <img src="{{ asset('storage/' . $page->bannerMedia) }}" alt="Banner Media" class="img-fluid" style="width: 100px;"/>
+                        @if($page->media)
+                            <img src="{{ asset('storage/' . $page->media) }}" alt="Banner Media" class="img-fluid" style="width: 100px;"/>
                         @else
                             No media
                         @endif

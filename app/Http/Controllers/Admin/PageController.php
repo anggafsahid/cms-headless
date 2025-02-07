@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Page;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Cloudinary\Cloudinary;
+use Cloudinary\Api\Upload\UploadApi;
 
 class PageController extends Controller
 {
@@ -30,14 +32,24 @@ class PageController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'bannerMedia' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,avi|max:10240', // validate media
+            'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,avi|max:10240', // validate media
             'status' => 'nullable|in:draft,published',
         ]);
 
         // Handle media upload
         $mediaPath = null;
-        if ($request->hasFile('bannerMedia')) {
-            $mediaPath = $request->file('bannerMedia')->store('pagesBannerMedia', 'public'); // Store in 'public/media' directory
+        if ($request->hasFile('media')) {
+            $mediaPath = $request->file('media')->store('pagesBannerMedia', 'public'); // Store in 'public/media' directory
+        }
+
+        // Handle banner media upload to Cloudinary
+        if ($request->hasFile('media')) {
+            $uploadedFile = $request->file('media');
+            $cloudinary = new Cloudinary();
+            $upload = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
+                'folder' => 'pagesBannerMedia', // Define the folder in Cloudinary
+            ]);
+            $mediaPath = $upload['secure_url']; // Store Cloudinary URL in database
         }
 
         Page::create([
@@ -69,15 +81,34 @@ class PageController extends Controller
             'meta_keywords' => 'nullable|string|max:255',
         ]);
 
-        // Handle media upload
-        $mediaPath = $page->bannerMedia;
-        if ($request->hasFile('bannerMedia')) {
-            // Delete old media if it exists
+        // // Handle media upload
+        // $mediaPath = $page->media;
+        // if ($request->hasFile('media')) {
+        //     // Delete old media if it exists
+        //     if ($mediaPath) {
+        //         Storage::disk('public')->delete($mediaPath);
+        //     }
+        //     // Store new media
+        //     $mediaPath = $request->file('media')->store('pagesBannerMedia', 'public');
+        // }
+
+        // Handle media upload if a new file is provided
+        $mediaPath = $page->media;
+        if ($request->hasFile('media')) {
+            // Delete old media from Cloudinary if exists
             if ($mediaPath) {
-                Storage::disk('public')->delete($mediaPath);
+                $cloudinary = new Cloudinary();
+                $publicId = basename(parse_url($mediaPath, PHP_URL_PATH), '.' . pathinfo($mediaPath, PATHINFO_EXTENSION));
+                $cloudinary->uploadApi()->destroy($publicId); // Remove old image from Cloudinary
             }
-            // Store new media
-            $mediaPath = $request->file('bannerMedia')->store('pagesBannerMedia', 'public');
+
+            // Upload new media to Cloudinary
+            $uploadedFile = $request->file('media');
+            $cloudinary = new Cloudinary();
+            $upload = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
+                'folder' => 'pagesBannerMedia', // Define the folder in Cloudinary
+            ]);
+            $mediaPath = $upload['secure_url']; // Store the Cloudinary URL
         }
 
         // Update the page with the validated data
@@ -113,9 +144,16 @@ class PageController extends Controller
             return response()->json(['message' => 'Page not found'], 404);
         }
 
-        // Delete the file from storage
-        if ($page->bannerMedia) {
-            Storage::disk('public')->delete($page->bannerMedia);
+        // // Delete the file from storage
+        // if ($page->media) {
+        //     Storage::disk('public')->delete($page->media);
+        // }
+
+        // Delete the file from Cloudinary if it exists
+        if ($page->media) {
+            $cloudinary = new Cloudinary();
+            $publicId = basename(parse_url($page->media, PHP_URL_PATH), '.' . pathinfo($page->media, PATHINFO_EXTENSION));
+            $cloudinary->uploadApi()->destroy($publicId); // Remove image from Cloudinary
         }
        
         // Delete Pages data from database

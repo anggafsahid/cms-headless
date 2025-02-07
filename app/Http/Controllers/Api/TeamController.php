@@ -7,6 +7,8 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Cloudinary\Cloudinary;
+use Cloudinary\Api\Upload\UploadApi;
 
 class TeamController extends Controller
 {
@@ -53,9 +55,14 @@ class TeamController extends Controller
         $team->role = $request->role;
         $team->bio = $request->bio;
 
-        // Handle profile picture upload if present
+       // Handle profile picture upload if present
         if ($request->hasFile('profile_picture')) {
-            $team->profile_picture = $request->file('profile_picture')->store('profile_pictures', 'public');
+            // Initialize Cloudinary
+            $cloudinary = new Cloudinary();
+            $uploadedFile = $cloudinary->upload($request->file('profile_picture')->getRealPath());
+
+            // Save the URL returned by Cloudinary
+            $team->profile_picture = $uploadedFile['secure_url'];
         }
 
         $team->save();
@@ -116,15 +123,22 @@ class TeamController extends Controller
                 ], 422);
             }
 
-            // Handle file upload
+            /// Handle file upload if present
             if ($request->hasFile('profile_picture')) {
-                // Delete old profile picture
+                // Initialize Cloudinary
+                $cloudinary = new Cloudinary();
+
+                // Delete old profile picture from Cloudinary if it exists
                 if ($team->profile_picture) {
-                    Storage::disk('public')->delete($team->profile_picture);
+                    $imagePublicId = pathinfo($team->profile_picture, PATHINFO_FILENAME);
+                    $cloudinary->destroy($imagePublicId);
                 }
-                $team->profile_picture = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+                // Upload new profile picture to Cloudinary
+                $uploadedFile = $cloudinary->upload($request->file('profile_picture')->getRealPath());
+                $team->profile_picture = $uploadedFile['secure_url'];
             }
-            
+
             // Update the team member details (excluding profile_picture)
             $team->update($request->except('profile_picture'));
 
@@ -155,9 +169,19 @@ class TeamController extends Controller
                 ], 404);
             }
 
-            // Delete the file from storage
+            // // Delete the file from storage
+            // if ($team->profile_picture) {
+            //     Storage::disk('public')->delete($team->profile_picture);
+            // }
+
+            // Delete the profile picture from Cloudinary if it exists
+            // Initialize Cloudinary object
+            $cloudinary = new Cloudinary();
+            // Delete the profile picture from Cloudinary if it exists
             if ($team->profile_picture) {
-                Storage::disk('public')->delete($team->profile_picture);
+                // Cloudinary's destroy method requires the public ID of the file
+                $imagePublicId = pathinfo($team->profile_picture, PATHINFO_FILENAME); // Extract public ID from file path
+                $cloudinary->destroy($imagePublicId); // Delete from Cloudinary
             }
         
             // Delete Pages data from database

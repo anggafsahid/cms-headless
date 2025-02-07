@@ -19,9 +19,9 @@
 
         <div class="form-group">
             <label for="media">Upload Media</label>
-            <input type="file" name="bannerMedia" id="bannerMedia" class="form-control">
+            <input type="file" name="media" id="media" class="form-control">
             @if($page->media)
-                <p>Current Media: <a href="{{ asset('storage/' . $page->bannerMedia) }}" target="_blank">View</a></p>
+                <p>Current Media: <a href="{{ asset('storage/' . $page->media) }}" target="_blank">View</a></p>
             @endif
         </div>
 

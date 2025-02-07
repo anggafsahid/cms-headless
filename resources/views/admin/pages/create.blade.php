@@ -18,7 +18,7 @@
 
         <div class="form-group">
             <label for="media">Media (Image/Video)</label>
-            <input type="file" name="bannerMedia" id="bannerMedia" class="form-control">
+            <input type="file" name="media" id="media" class="form-control">
         </div>
 
         <div class="form-group">

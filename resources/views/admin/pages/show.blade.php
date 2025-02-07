@@ -6,14 +6,14 @@
 
     <p>{{ $page->content }}</p>
 
-    @if ($page->bannerMedia)
-        @if (in_array(pathinfo($page->bannerMedia, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
+    @if ($page->media)
+        @if (in_array(pathinfo($page->media, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
             <!-- Display image -->
-            <img src="{{ asset('storage/' . $page->bannerMedia) }}" alt="Banner Media" class="img-fluid">
+            <img src="{{ asset('storage/' . $page->media) }}" alt="media" class="img-fluid">
         @elseif (in_array(pathinfo($page->media, PATHINFO_EXTENSION), ['mp4', 'avi', 'mov']))
             <!-- Display video -->
             <video class="img-fluid" controls>
-                <source src="{{ url('storage/pages/' . basename($page->banner_media)) }}" type="video/mp4">
+                <source src="{{ url('storage/pages/' . basename($page->media)) }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         @endif
