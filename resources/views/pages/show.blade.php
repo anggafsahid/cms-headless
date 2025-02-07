@@ -8,17 +8,16 @@
         <p class="small text-muted">
             By {{ $page->author->name }} | Published on {{ \Carbon\Carbon::parse($page->published_at)->format('F j, Y') }}
         </p>
-
         <br>
-
-        <div class="content">
-            {!! $page->content !!}
-        </div>
-
         @if ($page->media)
             <div class="media">
                 <img src="{{ $page->media }}" alt="Page Media" class="img-fluid">
             </div>
         @endif
+
+        <div class="content">
+            {!! $page->content !!}
+        </div>
+        
     </div>
 @endsection
