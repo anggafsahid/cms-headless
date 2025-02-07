@@ -1,5 +1,3 @@
-Here's the complete content for your `README.md` file in one Markdown file:
-
 ```markdown
 # Laravel CMS Project
 
@@ -105,5 +103,3 @@ If the project requires authentication for API access, you may need to implement
 
 MIT License. See [LICENSE](LICENSE) for details.
 ```
-
-You can copy and paste this entire content into your `README.md` file.
