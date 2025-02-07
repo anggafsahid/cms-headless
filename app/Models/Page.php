@@ -11,7 +11,7 @@ class Page extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title', 'slug', 'content', 'bannerMedia', 'status', 'published_at', 'meta_title', 'meta_description', 'meta_keywords', 'author_id',
+        'title', 'slug', 'content', 'media', 'status', 'published_at', 'meta_title', 'meta_description', 'meta_keywords', 'author_id',
     ];
     
     // Automatically generate a slug when creating a new page
