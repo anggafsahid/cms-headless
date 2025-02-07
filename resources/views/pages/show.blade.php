@@ -9,7 +9,7 @@
 
         @if ($page->media)
             <div class="media">
-                <img src="{{ asset('storage/' . $page->media) }}" alt="Page Media" class="img-fluid">
+                <img src="{{$page->media}}" alt="Page Media" class="img-fluid">
             </div>
         @endif
     </div>

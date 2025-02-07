@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Media;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Cloudinary\Cloudinary;
-use Cloudinary\Api\Upload\UploadApi;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class MediaController extends Controller
 {
@@ -20,19 +18,12 @@ class MediaController extends Controller
         try {
             $media = Media::all();
 
-            if ($media->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'No MEdia available',
-                    'data' => []
-                ], 200);
-            }
-
             return response()->json([
                 'success' => true,
-                'message' => 'Media retrieved successfully',
+                'message' => $media->isEmpty() ? 'No media available' : 'Media retrieved successfully',
                 'data' => $media
             ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -59,22 +50,21 @@ class MediaController extends Controller
                 ], 422);
             }
 
-            // Handle file upload
-            $file = $request->file('media');
-
-            // Handle media upload to Cloudinary
-            $cloudinary = new Cloudinary();
-            $upload = $cloudinary->uploadApi()->upload($file->getRealPath(), [
-                'folder' => 'mediaFiles', // Define the folder in Cloudinary
+            // Handle file upload to Cloudinary
+            $uploadedFile = Cloudinary::upload($request->file('media')->getRealPath(), [
+                'folder' => 'mediaFiles' // Define Cloudinary folder
             ]);
-            $filePath = $upload['secure_url']; // Store Cloudinary URL in database
+
+            $filePath = $uploadedFile->getSecurePath(); // Cloudinary URL
+            $publicId = $uploadedFile->getPublicId(); // Public ID for later deletion
 
             // Store media info in the database
             $media = Media::create([
-                'file_path' => $filePath,
-                'file_name' => $file->getClientOriginalName(),
-                'file_size' => $file->getSize(),
-                'file_type' => $file->getMimeType(),
+                'file_path'  => $filePath,
+                'public_id'  => $publicId, // Save public_id for deletion
+                'file_name'  => $request->file('media')->getClientOriginalName(),
+                'file_size'  => $request->file('media')->getSize(),
+                'file_type'  => $request->file('media')->getMimeType(),
             ]);
 
             return response()->json([
@@ -92,7 +82,7 @@ class MediaController extends Controller
     }
 
     /**
-     * Show the media file.
+     * Show a specific media file.
      */
     public function show($id)
     {
@@ -106,12 +96,11 @@ class MediaController extends Controller
                 ], 404);
             }
 
-            // Get the file URL
-            $url = Storage::url($media->file_path);
             return response()->json([
                 'success' => true,
                 'data' => $media
-            ]);
+            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -120,32 +109,34 @@ class MediaController extends Controller
         }
     }
 
-     /**
-     * Remove the specified page.
+    /**
+     * Remove the specified media.
      */
     public function destroy($id)
     {
         try {
             $media = Media::find($id);
+
             if (!$media) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Resource not found'
                 ], 404);
             }
-            
-            // Delete the media from Cloudinary
-            $cloudinary = new Cloudinary();
-            $publicId = basename(parse_url($media->file_path, PHP_URL_PATH)); // Extract the public ID from the Cloudinary URL
-            $cloudinary->uploadApi()->destroy($publicId); // Delete from Cloudinary
 
-            // Delete Media From Database
+            // Delete the media from Cloudinary
+            if ($media->public_id) {
+                Cloudinary::destroy($media->public_id);
+            }
+
+            // Delete media from database
             $media->delete();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Media deleted successfully'
-            ]);
+            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

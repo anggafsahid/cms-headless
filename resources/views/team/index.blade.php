@@ -21,7 +21,7 @@
                     <td>{{ $member->role }}</td>
                     <td>
                         @if($member->profile_picture)
-                            <img src="{{ asset('storage/' . $member->profile_picture) }}" alt="Page Media" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover;">
+                            <img src="{{ $member->profile_picture }}" alt="Page Media" class="img-fluid" style="width: 50px; height: 50px; object-fit: cover;">
                         @else
                             <span>No Profile Picture</span>
                         @endif

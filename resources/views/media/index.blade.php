@@ -9,10 +9,10 @@
                     @if (in_array(substr($item->file_type, 0, 5), ['image', 'video']))
                         <div class="card">
                             @if (strpos($item->file_type, 'image') !== false)
-                                <img src="{{ asset('storage/' . $item->file_path) }}" class="card-img-top" alt="{{ $item->file_name }}">
+                                <img src="{{ $item->file_path }}" class="card-img-top" alt="{{ $item->file_name }}">
                             @elseif (strpos($item->file_type, 'video') !== false)
                                 <video controls class="card-img-top">
-                                    <source src="{{ asset('storage/' . $item->file_path) }}" type="{{ $item->file_type }}">
+                                    <source src="{{ $item->file_path }}" type="{{ $item->file_type }}">
                                 </video>
                             @endif
                             <div class="card-body">
