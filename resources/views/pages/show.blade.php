@@ -11,7 +11,7 @@
         <br>
         @if ($page->media)
             <div class="media">
-                <img src="{{ $page->media }}" alt="Page Media" class="img-fluid">
+                <img src="{{ $page->media }}" alt="Page Media" class="img-fluid" style="max-height: 300px;">
             </div>
         @endif
 
