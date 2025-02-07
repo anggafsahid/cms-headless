@@ -1,0 +1,15 @@
+name: cms-headless
+services:
+  - name: web
+    build:
+      builder: php
+      buildpacks:
+        - heroku/php
+    run:
+      command: |
+        composer install --no-dev --optimize-autoloader
+        php artisan migrate --force
+        php artisan serve --host=0.0.0.0 --port=$PORT
+    routes:
+      - path: /
+        type: http
