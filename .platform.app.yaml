@@ -6,6 +6,7 @@ build:
   commands:
     - composer install --no-dev --optimize-autoloader
     - php artisan migrate --force
+    - php artisan storage:link
 
 start:
   # This section specifies how to start the app
