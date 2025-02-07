@@ -106,7 +106,7 @@ class PageController extends Controller
                 'title' => 'required|string|max:255',
                 'slug' => 'nullable|string|max:255|unique:pages,slug',
                 'content' => 'required|min:10',
-                'bannerMedia' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'media' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 'status' => 'required|in:draft,published',
                 'published_at' => 'nullable|date',
                 'meta_title' => 'nullable|string|max:255',
@@ -129,8 +129,8 @@ class PageController extends Controller
             $data['slug'] = $request->filled('slug') ? $request->slug : $this->generateUniqueSlug($request->title);
 
             // Handle banner media upload
-            if ($request->hasFile('bannerMedia')) {
-                $data['bannerMedia'] = $request->file('bannerMedia')->store('banners', 'public');
+            if ($request->hasFile('media')) {
+                $data['media'] = $request->file('media')->store('pagesBannerMedia', 'public');
             }
 
             // Create the page
@@ -171,7 +171,7 @@ class PageController extends Controller
                 'title' => 'sometimes|required|string|max:255',
                 'slug' => 'nullable|string|max:255|unique:pages,slug,' . $page->id,
                 'content' => 'nullable|string|min:10',
-                'bannerMedia' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
+                'media' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:5120',
                 'status' => 'sometimes|required|in:draft,published',
                 'published_at' => 'nullable|date',
                 'meta_title' => 'nullable|string|max:255',
@@ -192,14 +192,14 @@ class PageController extends Controller
             $slug = $request->filled('slug') ? $request->input('slug') : $this->generateUniqueSlug($request->input('title', $page->title));
 
             // Handle media upload if a new file is provided
-            $mediaPath = $page->bannerMedia;
-            if ($request->hasFile('bannerMedia')) {
+            $mediaPath = $page->media;
+            if ($request->hasFile('media')) {
                 // Delete old media if exists
                 if ($mediaPath) {
                     Storage::disk('public')->delete($mediaPath);
                 }
                 // Store the new media
-                $mediaPath = $request->file('bannerMedia')->store('pagesBannerMedia', 'public');
+                $mediaPath = $request->file('media')->store('pagesBannerMedia', 'public');
             }
 
             // Update the page with only the provided fields
@@ -207,7 +207,7 @@ class PageController extends Controller
                 'title' => $request->input('title', $page->title),
                 'slug' => $slug,
                 'content' => $request->input('content', $page->content),
-                'bannerMedia' => $mediaPath, 
+                'media' => $mediaPath, 
                 'status' => $request->input('status', $page->status),
                 'published_at' => $request->input('published_at', $page->published_at),
                 'meta_title' => $request->input('meta_title', $page->meta_title),
@@ -246,8 +246,8 @@ class PageController extends Controller
         }
 
         // Delete the file from storage
-        if ($page->bannerMedia) {
-            Storage::disk('public')->delete($page->bannerMedia);
+        if ($page->media) {
+            Storage::disk('public')->delete($page->media);
         }
        
         // Delete Pages data from database

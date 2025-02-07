@@ -5,6 +5,7 @@ build:
   # This section is used for the build process
   commands:
     - composer install --no-dev --optimize-autoloader
+    - php artisan migrate --force
 
 start:
   # This section specifies how to start the app
