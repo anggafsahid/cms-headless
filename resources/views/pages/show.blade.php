@@ -6,7 +6,7 @@
 
         <!-- Display Author and Published At in small text below the title -->
         <p class="small text-muted">
-            By {{ $page->author }} | Published on {{ \Carbon\Carbon::parse($page->published_at)->format('F j, Y') }}
+            By {{ $page->author->name }} | Published on {{ \Carbon\Carbon::parse($page->published_at)->format('F j, Y') }}
         </p>
 
         <br>
