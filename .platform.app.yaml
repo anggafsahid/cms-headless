@@ -1,15 +1,18 @@
-name: cms-headless
+name: my-laravel-app
 services:
-  - name: web
+  - name: app
     build:
-      builder: php
-      buildpacks:
-        - heroku/php
-    run:
-      command: |
-        composer install --no-dev --optimize-autoloader
-        php artisan migrate --force
-        php artisan serve --host=0.0.0.0 --port=$PORT
+      # Use the custom build file if needed
+      commands:
+        - composer install --no-dev --optimize-autoloader
+    environment:
+      - APP_KEY=${APP_KEY}
+    env:
+      DATABASE_URL: ${MYSQL_URL}
+    web:
+      # Ensure Laravel is set to run with PHP-FPM
+      command: "php artisan serve --host=0.0.0.0 --port=$PORT"
+    regions:
+      - dfw
     routes:
       - path: /
-        type: http
