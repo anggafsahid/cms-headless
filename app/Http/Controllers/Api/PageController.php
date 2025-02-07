@@ -127,24 +127,15 @@ class PageController extends Controller
 
             // Prepare data
             $data = $request->all();
-            // Generate slug if not provided
             $data['slug'] = $request->filled('slug') ? $request->slug : $this->generateUniqueSlug($request->title);
 
-            // // Handle banner media upload
-            // if ($request->hasFile('media')) {
-            //     $data['media'] = $request->file('media')->store('pagesBannerMedia', 'public');
-            // }
-
-            // Handle banner media upload to Cloudinary
+            // Handle media upload to Cloudinary
             if ($request->hasFile('media')) {
-                $uploadedFile = $request->file('media');
-                $cloudinary = new Cloudinary();
-                $upload = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
-                    'folder' => 'pagesBannerMedia', // Define the folder in Cloudinary
+                $uploadedFile = (new UploadApi())->upload($request->file('media')->getRealPath(), [
+                    'folder' => 'pagesBannerMedia',
                 ]);
-                $data['media'] = $upload['secure_url']; // Store Cloudinary URL in database
+                $data['media'] = $uploadedFile['secure_url'];
             }
-
 
             // Create the page
             $page = Page::create($data);
@@ -161,6 +152,7 @@ class PageController extends Controller
             ], 500);
         }
     }
+
 
 
     /**
