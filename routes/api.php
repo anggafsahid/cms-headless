@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\MediaController;
 use App\Http\Controllers\Api\TeamController;
-
+use Illuminate\Support\Facades\Artisan;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     // Get Authenticated User Details
     Route::get('/user', function (Request $request) {return $request->user();});
-
+    Route::get('/getstoragelink', function () {Artisan::call('storage:link');});
 
     // Authenticated Pages API
     Route::post('pages', [PageController::class, 'store']);
