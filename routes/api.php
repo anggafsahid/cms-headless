@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // API Routes for Pages
 Route::get('pages', [PageController::class, 'index']);
 Route::get('pages/{slug}', [PageController::class, 'show']);
+Route::get('pages/id/{id}', [PageController::class, 'showById']);
 
 
 // API Routes for Media
