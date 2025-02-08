@@ -17,6 +17,7 @@ class TeamController extends Controller
 
             return response()->json([
                 'success' => true,
+                'total_data' => $teamMembers->count(),
                 'data' => $teamMembers
             ], 200);
 

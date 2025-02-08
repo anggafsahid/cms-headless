@@ -21,6 +21,7 @@ class MediaController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $media->isEmpty() ? 'No media available' : 'Media retrieved successfully',
+                'total_data' => $media->count(),
                 'data' => $media
             ], 200);
 

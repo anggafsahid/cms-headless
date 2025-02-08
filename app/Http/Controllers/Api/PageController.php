@@ -24,6 +24,7 @@ class PageController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'No pages available',
+                    'total_data' => $pages->count(),
                     'data' => []
                 ], 200);
             }
@@ -31,6 +32,7 @@ class PageController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pages retrieved successfully',
+                'total_data' => $pages->count(),
                 'data' => $pages
             ], 200);
         } catch (\Exception $e) {
