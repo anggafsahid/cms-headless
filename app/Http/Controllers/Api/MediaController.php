@@ -63,9 +63,9 @@ class MediaController extends Controller
             $media = Media::create([
                 'file_path'  => $filePath,
                 'public_id'  => $publicId, // Save public_id for deletion
-                'file_name'  => $request->file('media')->getClientOriginalName(),
-                'file_size'  => $request->file('media')->getSize(),
-                'file_type'  => $request->file('media')->getMimeType(),
+                'file_name'  => $request->file('file_path')->getClientOriginalName(),
+                'file_size'  => $request->file('file_path')->getSize(),
+                'file_type'  => $request->file('file_path')->getMimeType(),
             ]);
 
             return response()->json([
