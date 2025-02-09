@@ -40,7 +40,7 @@ class MediaController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'media' => 'required|file|mimes:jpg,jpeg,png,gif,mp4|max:10240', // 10MB max
+                'file_path' => 'required|file|mimes:jpg,jpeg,png,gif,mp4|max:10240', // 10MB max
             ]);
 
             if ($validator->fails()) {
