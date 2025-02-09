@@ -52,7 +52,7 @@ class MediaController extends Controller
             }
 
             // Handle file upload to Cloudinary
-            $uploadedFile = Cloudinary::upload($request->file('media')->getRealPath(), [
+            $uploadedFile = Cloudinary::upload($request->file('file_path')->getRealPath(), [
                 'folder' => 'mediaFiles' // Define Cloudinary folder
             ]);
 
